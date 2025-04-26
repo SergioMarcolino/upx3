@@ -13,3 +13,6 @@
 body {
     font: var(--font-family);
 }
+html {
+    scroll-behavior: smooth;
+  }
