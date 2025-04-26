@@ -1,0 +1,15 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+:root{
+    --font-family: 'Poppins', sans-serif;
+    --h2: 800 16px/140% var(--font-family);
+    --title: 600 3.12rem/120% var(--font-family);
+    --text: 400 1rem/140% var(--font-family);
+
+}
+body {
+    font: var(--font-family);
+}

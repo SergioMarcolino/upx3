@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <title>EcoEnergy</title>
+</head>
+<body>
+    <nav>
+        <h2>EcoEnergy</h2>
+    </nav>
+    <div class="inter">
+        <h1>🌱 Seu Consumo Energético sob Controle</h1>
+        <h2>Monitore, economize e adote energias renováveis</h2>
+        
+        <p class="destaque">
+            Nosso sistema analisa seus gastos elétricos mensais e oferece <strong>relatórios personalizados</strong> 
+            para reduzir desperdícios e incentivar fontes sustentáveis.
+        </p>
+        
+        <div class="cta-buttons">
+            <a href="#media" class="btn-primary">📊 Ver Meu Consumo</a>
+            <a href="#solar" class="btn-secondary">♻️ Energias Renováveis</a>
+        </div>
+    </div>    
+        <main>
+            <section id="Media">
+            
+                <h1>Calculadora de Consumo Energético</h1>
+            
+                <input type="number" id="gasto" placeholder="Digite o gasto em kWh">
+                <button onclick="adicionarGasto()" class="botao">Adicionar Gasto</button>
+            
+                <h3>Gastos Informados:</h3>
+                <ul id="listaGastos"></ul>
+            
+                <button onclick="calcularMedia()" class="botao">Calcular Média</button>
+            
+                <div class="resultado" id="resultado"></div>
+            
+                <script>
+                let gastos = [];
+        
+                function adicionarGasto() {
+                    const input = document.getElementById('gasto');
+                    const valor = parseFloat(input.value);
+        
+                    if (!isNaN(valor) && valor >= 0) {
+                        gastos.push(valor);
+                        atualizarLista();
+                        input.value = '';
+                    } else {
+                        alert('Por favor, insira um número válido.');
+                    }
+                }
+        
+                function atualizarLista() {
+                    const lista = document.getElementById('listaGastos');
+                    lista.innerHTML = '';
+                    gastos.forEach((gasto, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = `Mês ${index + 1}: ${gasto} kWh`;
+                        lista.appendChild(li);
+                    });
+                }
+        
+                async function calcularMedia() {
+                    if (gastos.length === 0) {
+                        alert('Adicione pelo menos um gasto.');
+                        return;
+                    }
+                
+                    const response = await fetch('/calcular_media', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ gastos: gastos })
+                    });
+                
+                    const data = await response.json();
+                
+                    if (response.ok) {
+                        document.getElementById('resultado').textContent = `Média de Consumo: ${data.media} kWh`;
+                    } else {
+                        alert(data.erro);
+                    }
+                }
+            </script>
+
+            </section>
+            <section class="solar">
+                <div class="card"> 
+                        <h3>Energia Solar: Economia e Sustentabilidade</h3>
+                        
+                        <ul>
+                            <li><strong>Redução de até 95% na conta de luz</strong> - Sistemas fotovoltaicos podem gerar toda a energia que sua residência ou empresa consome</li>
+                            
+                            <li><strong>Payback em 3 a 7 anos</strong> - O investimento se paga em pouco tempo, considerando a vida útil de 25+ anos dos painéis</li>
+                            
+                            <li><strong>Proteção contra aumentos na tarifa</strong> - Você se torna menos vulnerável aos reajustes anuais das concessionárias</li>
+                            
+                            <li><strong>Valorização do imóvel</strong> - Propriedades com energia solar valem até 6% mais no mercado</li>
+                            
+                            <li><strong>Linhas de crédito especiais</strong> - Muitos bancos oferecem financiamento com juros baixos para sistemas solares</li>
+                            
+                            <li><strong>Baixa manutenção</strong> - Apenas limpeza periódica dos painéis, sem custos significativos</li>
+                            
+                            <li><strong>Incentivos fiscais</strong> - Algumas cidades oferecem IPTU verde e outros benefícios</li>
+                        </ul>
+                        
+                        <div class="highlight">
+                            <p><strong>Exemplo prático:</strong> Uma casa que gasta R$ 300/mês em energia pode economizar R$ 90.000 em 25 anos com um sistema solar de R$ 20.000 (que se paga em ~5 anos).</p>
+                    </div>
+                    <div class="link">
+                        <a href="https://www.portalsolar.com.br/energia-renovavel" target="_blank">
+                            <svg width="60" height="61" viewBox="0 0 60 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="0.769226" width="60" height="60" rx="30" fill="#DEFF03"/>
+                                <mask id="mask0_2025_62" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="15" y="15" width="30" height="31">
+                                <rect x="15" y="15.7692" width="30" height="30" fill="#D9D9D9"/>
+                                </mask>
+                                <g mask="url(#mask0_2025_62)">
+                                <path d="M23 38.2692L21.25 36.5192L33.25 24.5192H22.5V22.0192H37.5V37.0192H35V26.2692L23 38.2692Z" fill="#1C1B1F"/>
+                                </g>
+                                </svg>  
+                            </a>
+                    </div>                      
+                </div>
+
+            </section>
+                <section class="hidroeletrica">
+                    <div class="card"> 
+                        <h3>Energia Hidrelétrica: Força da Natureza ao seu Alcance</h3>
+                        
+                        <ul>
+                            <li><strong>Redução de até 90% na conta de luz</strong> - Pequenas centrais hidrelétricas podem atender todo o consumo de uma propriedade rural ou industrial</li>
+                            
+                            <li><strong>Payback em 5 a 10 anos</strong> - O investimento é compensado ao longo do tempo, com vida útil superior a 30 anos</li>
+                            
+                            <li><strong>Geração contínua</strong> - A produção é constante, dia e noite, sem depender de condições climáticas</li>
+                            
+                            <li><strong>Valorização da propriedade</strong> - Imóveis com geração própria de energia têm maior valor de mercado</li>
+                            
+                            <li><strong>Linhas de crédito específicas</strong> - Existem financiamentos agrícolas e industriais com condições especiais para projetos de energia hidrelétrica</li>
+                            
+                            <li><strong>Baixa manutenção</strong> - Manutenção periódica em turbinas e sistemas elétricos, com operação relativamente simples</li>
+                            
+                            <li><strong>Incentivos legais</strong> - Benefícios como isenção de ICMS em alguns estados e programas de incentivo à energia renovável</li>
+                        </ul>
+                        
+                        <div class="highlight">
+                            <p><strong>Exemplo prático:</strong> Uma fazenda que gasta R$ 2.000/mês em energia pode economizar mais de R$ 500.000 em 25 anos com uma microcentral hidrelétrica de R$ 100.000 (que se paga em ~6 anos).</p>
+                        </div>
+                        <div class="link">
+                            <a href="https://www.portalsolar.com.br/energia-hidreletrica" target="_blank">
+                            <svg width="60" height="61" viewBox="0 0 60 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="0.769226" width="60" height="60" rx="30" fill="#DEFF03"/>
+                                <mask id="mask0_2025_62" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="15" y="15" width="30" height="31">
+                                <rect x="15" y="15.7692" width="30" height="30" fill="#D9D9D9"/>
+                                </mask>
+                                <g mask="url(#mask0_2025_62)">
+                                <path d="M23 38.2692L21.25 36.5192L33.25 24.5192H22.5V22.0192H37.5V37.0192H35V26.2692L23 38.2692Z" fill="#1C1B1F"/>
+                                </g>
+                                </svg>       
+                            </a>        
+                        </div>    
+                    </div>
+            </section >
+            <section class="geotermica">
+                    <div class="card"> 
+                        <h3>Energia Geotérmica: Potência Renovável do Subsolo</h3>
+                        
+                        <ul>
+                            <li><strong>Redução significativa na conta de luz</strong> - Sistemas geotérmicos podem fornecer aquecimento, resfriamento e eletricidade com alta eficiência</li>
+                            
+                            <li><strong>Payback em 6 a 12 anos</strong> - O retorno do investimento acontece de forma gradual, considerando a alta durabilidade dos sistemas</li>
+                            
+                            <li><strong>Energia estável e contínua</strong> - Não depende de clima ou horário, funcionando 24 horas por dia</li>
+                            
+                            <li><strong>Valorização do imóvel</strong> - Instalações geotérmicas agregam valor e modernidade à propriedade</li>
+                            
+                            <li><strong>Linhas de crédito e subsídios</strong> - Alguns programas governamentais e bancos incentivam projetos de energia renovável</li>
+                            
+                            <li><strong>Baixa emissão de carbono</strong> - Reduz drasticamente a pegada ambiental em comparação com fontes fósseis</li>
+                            
+                            <li><strong>Manutenção mínima</strong> - Sistemas geotérmicos exigem menos intervenções ao longo dos anos</li>
+                        </ul>
+                        
+                        <div class="highlight">
+                            <p><strong>Exemplo prático:</strong> Uma residência que gasta R$ 600/mês em energia pode economizar cerca de R$ 180.000 em 25 anos com um sistema geotérmico de R$ 50.000 (com payback de ~8 anos).</p>
+                        </div>
+                        <div class="link">
+                            <a href="https://www.microsoft.com/pt-br/sustainability/learning-center/what-is-geothermal-energy" target="_blank"> 
+                            <svg width="60" height="61" viewBox="0 0 60 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="0.769226" width="60" height="60" rx="30" fill="#DEFF03"/>
+                                <mask id="mask0_2025_62" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="15" y="15" width="30" height="31">
+                                <rect x="15" y="15.7692" width="30" height="30" fill="#D9D9D9"/>
+                                </mask>
+                                <g mask="url(#mask0_2025_62)">
+                                <path d="M23 38.2692L21.25 36.5192L33.25 24.5192H22.5V22.0192H37.5V37.0192H35V26.2692L23 38.2692Z" fill="#1C1B1F"/>
+                                </g>
+                                </svg>
+                            </a>  
+                        </div>               
+                    </div>
+                </section>
+                <section class="eolica">
+                    <div class="card">
+                        <h3>Energia Eólica: Potência e Sustentabilidade</h3>
+                        
+                        <ul>
+                            <li><strong>Redução de até 40% nos custos energéticos</strong> - Turbinas eólicas podem suprir grande parte do consumo residencial ou empresarial</li>
+                            
+                            <li><strong>Retorno em 5 a 8 anos</strong> - Vida útil de 20+ anos torna o investimento altamente vantajoso</li>
+                            
+                            <li><strong>Independência energética</strong> - Ideal para regiões com ventos constantes e tarifas elétricas altas</li>
+                            
+                            <li><strong>Solução escalável</strong> - Pode ser implementada desde microturbinas até parques eólicos completos</li>
+                            
+                            <li><strong>Linhas de financiamento verde</strong> - Bancos oferecem condições especiais para projetos eólicos</li>
+                            
+                            <li><strong>Baixa manutenção</strong> - Sistemas modernos requerem pouca intervenção após instalação</li>
+                            
+                            <li><strong>Créditos de carbono</strong> - Possibilidade de receber por compensação ambiental em projetos maiores</li>
+                        </ul>
+                        
+                        <div class="highlight">
+                            <p><strong>Exemplo prático:</strong> Uma turbina eólica de 10kW pode gerar 1.500kWh/mês, suficiente para 2-3 residências médias, com economia anual de ~R$ 15.000.</p>
+                        </div>
+                        <div class="link">
+                            <a href="https://www.portalsolar.com.br/energia-eolica" target="_blank">
+                            <svg width="60" height="61" viewBox="0 0 60 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="0.769226" width="60" height="60" rx="30" fill="#DEFF03"/>
+                                <mask id="mask0_2025_62" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="15" y="15" width="30" height="31">
+                                <rect x="15" y="15.7692" width="30" height="30" fill="#D9D9D9"/>
+                                </mask>
+                                <g mask="url(#mask0_2025_62)">
+                                <path d="M23 38.2692L21.25 36.5192L33.25 24.5192H22.5V22.0192H37.5V37.0192H35V26.2692L23 38.2692Z" fill="#1C1B1F"/>
+                                </g>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+        </main>
+        <footer>
+
+        </footer>
+</body>
+</html>
