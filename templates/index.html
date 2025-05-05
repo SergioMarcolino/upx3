@@ -6,12 +6,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/layout.css') }}">
+    
     <title>EcoEnergy</title>
 </head>
 <body>
     <nav>
         <h2>EcoEnergy</h2>
+       
+        <form action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+            <button type="submit" class="logout-btn">
+                Sair
+            </button>
+        </form>
     </nav>
     <div class="inter">
         <h1>🌱 Seu Consumo Energético sob Controle</h1>
@@ -29,67 +36,59 @@
     </div>    
         <main>
             <section id="Media">
-            
+                <div id="alert-message" class="alert" style="display: none;"></div>
+                
                 <h1>Calculadora de Consumo Energético</h1>
-            
-                <input type="number" id="gasto" placeholder="Digite o gasto em kWh">
-                <button onclick="adicionarGasto()" class="botao">Adicionar Gasto</button>
-            
-                <h3>Gastos Informados:</h3>
-                <ul id="listaGastos"></ul>
-            
-                <button onclick="calcularMedia()" class="botao">Calcular Média</button>
-            
-                <div class="resultado" id="resultado"></div>
-            
-                <script>
-                let gastos = [];
-        
-                function adicionarGasto() {
-                    const input = document.getElementById('gasto');
-                    const valor = parseFloat(input.value);
-        
-                    if (!isNaN(valor) && valor >= 0) {
-                        gastos.push(valor);
-                        atualizarLista();
-                        input.value = '';
-                    } else {
-                        alert('Por favor, insira um número válido.');
-                    }
-                }
-        
-                function atualizarLista() {
-                    const lista = document.getElementById('listaGastos');
-                    lista.innerHTML = '';
-                    gastos.forEach((gasto, index) => {
-                        const li = document.createElement('li');
-                        li.textContent = `Mês ${index + 1}: ${gasto} kWh`;
-                        lista.appendChild(li);
-                    });
-                }
-        
-                async function calcularMedia() {
-                    if (gastos.length === 0) {
-                        alert('Adicione pelo menos um gasto.');
-                        return;
-                    }
+                <form id="consumoForm" class="form-consumo">
+                    <label for="ano">Ano:</label>
+                    <input type="number" id="ano" name="ano" value="{{ ano or '' }}" required>
+    
+                    <label for="mes">Mês:</label>
+                    <select id="mes" name="mes" required>
+                        <option value="Janeiro">Janeiro</option>
+                        <option value="Fevereiro">Fevereiro</option>
+                        <option value="Março">Março</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Maio">Maio</option>
+                        <option value="Junho">Junho</option>
+                        <option value="Julho">Julho</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Setembro">Setembro</option>
+                        <option value="Outubro">Outubro</option>
+                        <option value="Novembro">Novembro</option>
+                        <option value="Dezembro">Dezembro</option>
+                    </select>
+    
+                    <label for="kwh">Consumo em kWh:</label>
+                    <input type="number" id="kwh" name="kwh" step="0.01" required>
+    
+                    <button type="submit" class="btn-primary">Registrar Consumo</button>
+                </form>
                 
-                    const response = await fetch('/calcular_media', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ gastos: gastos })
-                    });
-                
-                    const data = await response.json();
-                
-                    if (response.ok) {
-                        document.getElementById('resultado').textContent = `Média de Consumo: ${data.media} kWh`;
-                    } else {
-                        alert(data.erro);
-                    }
-                }
-            </script>
-
+                <form action="{{ url_for('media') }}" method="POST" class="media-form">
+                    <label for="ano_consulta">Informe o ano que deseja consultar:</label>
+                    <input type="number" id="ano_consulta" name="ano" value="{{ ano or '' }}" required>
+            
+                    <label for="estado_consulta">Informe o estado (sigla):</label>
+                    <select id="estado_consulta" name="estado" required>
+                        <option value="">Selecione...</option>
+                        {% for uf in ['AC','AL','AP','AM','BA','CE','DF','ES','GO',
+                                     'MA','MT','MS','MG','PA','PB','PR','PE','PI',
+                                     'RJ','RN','RS','RO','RR','SC','SP','SE','TO'] %}
+                        <option value="{{ uf }}" {% if estado == uf %}selected{% endif %}>{{ uf }}</option>
+                        {% endfor %}
+                    </select>
+            
+                    <button type="submit" class="btn-primary">📉 Calcular Média</button>
+                </form>
+            
+                {% if resultado %}
+                <div class="resultado-media {% if cor == 'verde' %}verde{% else %}vermelha{% endif %}">
+                    <p><strong>Média anual do seu consumo:</strong> {{ "%.2f"|format(media_usuario) }} kWh</p>
+                    <p><strong>Média estadual:</strong> {{ "%.2f"|format(media_estadual) }} kWh</p>
+                    <p><strong>Resultado:</strong> {{ resultado }}</p>
+                </div>
+                {% endif %}
             </section>
             <section id="solar">
                 <div class="card"> 
@@ -248,5 +247,43 @@
         <footer>
 
         </footer>
+        <script>
+            document.getElementById('consumoForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const form = e.target;
+                const formData = new FormData(form);
+                const alertDiv = document.getElementById('alert-message');
+                
+                alertDiv.style.display = 'none';
+                alertDiv.className = 'alert';
+                
+                try {
+                    const response = await fetch('/registrar_consumo', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) throw new Error('Erro na resposta do servidor');
+                    
+                    const result = await response.json();
+                    
+                    alertDiv.textContent = result.message;
+                    alertDiv.classList.add('success');
+                    alertDiv.style.display = 'block';
+                    
+                    document.getElementById('kwh').value = '';
+                    
+                    setTimeout(() => {
+                        alertDiv.style.display = 'none';
+                    }, 5000);
+                    
+                } catch (error) {
+                    alertDiv.textContent = 'Erro ao registrar consumo: ' + (error.message || 'Tente novamente');
+                    alertDiv.classList.add('error');
+                    alertDiv.style.display = 'block';
+                }
+            });
+            </script>
 </body>
 </html>

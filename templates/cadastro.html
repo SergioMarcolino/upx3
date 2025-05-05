@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <title>Cadastro - EcoEnergy</title>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Cadastro</h2>
+        <form action="/cadastro" method="POST">
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" required>
+            
+            <label for="email">E-mail:</label>
+            <input type="email" name="email" required>
+            
+            <label for="senha">Senha:</label>
+            <input type="password" name="senha" required>
+            
+            <label for="senha_confirmacao">Confirmar Senha:</label>
+            <input type="password" name="senha_confirmacao" required>
+            
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p>Já tem uma conta? <a href="/login">Faça login</a></p>
+    </div>
+</body>
+</html>
